@@ -134,6 +134,9 @@
       <Project>{ff70ce49-bcce-42ed-af72-5168dde8893a}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="393.763_2024-09-02_19-42-53.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -11,8 +11,14 @@
 
 class Filter {
 public:
+    // Constructor que acepta la tasa de muestreo
+    Filter(float sampleRate);
+
     // Aplica un filtro pasa-banda a la señal IQ, dentro del rango de frecuencias especificado.
-    std::vector<std::complex<float>> applyBandpassFilter(const std::vector<std::complex<float>>& iqData, float lowFreq, float highFreq);
+    void applyBandpassFilter(std::vector<std::complex<float>>& iqData, float lowFreq, float highFreq);
+
+private:
+    float sampleRate;  // Tasa de muestreo en Hz
 };
 
 #endif // FILTER_H

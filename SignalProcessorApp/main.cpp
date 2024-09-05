@@ -15,7 +15,6 @@ int main() {
 
     // Leer un chunk de datos IQ
     auto iqData = reader.getNextChunk(1024);
-    visualizer.setTitle("Raw IQ");
     visualizer.setSignal(iqData);
     visualizer.show();
 
@@ -24,13 +23,11 @@ int main() {
 
     // Aplicar corrección de offset DC
     preprocessor.applyDCOffsetCorrection(iqData);
-    visualizer.setTitle("Corregido offset DC");
     visualizer.setSignal(iqData);
     visualizer.show();
 
     // Aplicar normalización
     preprocessor.normalize(iqData);
-    visualizer.setTitle("Normalizada");
     visualizer.setSignal(iqData);
     visualizer.show();
 

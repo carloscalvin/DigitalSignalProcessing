@@ -2,22 +2,30 @@
 #include <vector>
 #include <complex>
 #include "../DSPModules/Preprocessor.h"
+#include "../DSPModules/SignalGenerator.h"
 
 TEST(PreprocessorTests, ApplyDCOffsetCorrection) {
-    // Arrange: Crear un pequeño vector de datos IQ con un offset DC artificial.
-    std::vector<std::complex<float>> iqData = {
-        {2.0f, 3.0f}, {2.0f, 3.0f}, {2.0f, 3.0f}, {2.0f, 3.0f}
-    };
+    SignalGenerator generator;
+
+    // Arrange: Generar una señal senoidal con un offset DC
+    auto sineWave = generator.generateSineWave(1.0f, 1000.0f, 0.0f, 48000.0f, 1024);
+    for (auto& sample : sineWave) {
+        sample += std::complex<float>(1.0f, 1.0f); // Añadir offset DC
+    }
 
     // Act: Crear el preprocesador y aplicar la corrección de offset DC.
     Preprocessor preprocessor;
-    preprocessor.applyDCOffsetCorrection(iqData);
+    preprocessor.applyDCOffsetCorrection(sineWave);
 
-    // Assert: Después de la corrección, todos los valores deberían estar centrados en torno a cero.
-    for (const auto& sample : iqData) {
-        EXPECT_NEAR(sample.real(), 0.0f, 1e-5);
-        EXPECT_NEAR(sample.imag(), 0.0f, 1e-5);
+    // Assert: Verificar que el offset DC ha sido eliminado
+    std::complex<float> mean(0.0f, 0.0f);
+    for (const auto& sample : sineWave) {
+        mean += sample;
     }
+    mean /= static_cast<float>(sineWave.size());
+
+    ASSERT_NEAR(mean.real(), 0.0f, 1e-5);
+    ASSERT_NEAR(mean.imag(), 0.0f, 1e-5);
 }
 
 TEST(PreprocessorTests, Normalize) {
@@ -45,9 +53,4 @@ TEST(PreprocessorTests, Normalize) {
     EXPECT_NEAR(std::abs(iqData[1]), 0.5f, 1e-5);
     EXPECT_NEAR(std::abs(iqData[2]), 0.75f, 1e-5);
     EXPECT_NEAR(std::abs(iqData[3]), 1.0f, 1e-5);
-}
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }

@@ -27,6 +27,12 @@
     <ClInclude Include="Visualizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SignalGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Modulator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SignalReader.cpp">
@@ -39,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Visualizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SignalGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Modulator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

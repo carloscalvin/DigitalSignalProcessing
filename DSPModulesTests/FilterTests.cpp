@@ -1,15 +1,21 @@
-#include "../DSPModules/Filter.h"
 #include <gtest/gtest.h>
 #include <vector>
 #include <complex>
+#include "../DSPModules/Filter.h"
+#include "../DSPModules/SignalGenerator.h"
 
 // Test básico para verificar que el filtro pasa-banda funciona correctamente
 TEST(FilterTests, BandpassFilterTest) {
-    // Crear un trozo de señal IQ con valores conocidos
-    std::vector<std::complex<float>> iqData = {
-        {1.0f, 0.5f}, {0.8f, 0.2f}, {0.5f, 0.0f}, {0.2f, -0.2f}, {0.0f, -0.5f},
-        {-0.2f, -0.8f}, {-0.5f, -1.0f}, {-0.8f, -1.2f}, {-1.0f, -1.5f}, {-1.2f, -1.8f}
-    };
+    SignalGenerator generator;
+
+    // Generar una señal senoidal con frecuencia de 5000 Hz
+    auto sineWave = generator.generateSineWave(1.0f, 5000.0f, 0.0f, 48000.0f, 1024);
+
+    // Generar ruido de fondo
+    auto noise = generator.generateGaussianNoise(0.0f, 0.1f, 1024);
+
+    // Añadir ruido a la señal
+    auto noisySignal = generator.addNoise(sineWave, noise);
 
     // Inicializar el filtro con la tasa de muestreo
     float sampleRate = 48000.0f; // Tasa de muestreo en Hz
@@ -20,22 +26,13 @@ TEST(FilterTests, BandpassFilterTest) {
     float highFreq = 15000.0f; // Frecuencia alta en Hz
 
     // Aplicar el filtro pasa-banda a la señal
-    filter.applyBandpassFilter(iqData, lowFreq, highFreq);
+    filter.applyBandpassFilter(noisySignal, lowFreq, highFreq);
 
-    // Verificar que la señal haya sido procesada
-    bool allSame = true;
-    for (size_t i = 1; i < iqData.size(); ++i) {
-        if (iqData[i] != iqData[0]) {
-            allSame = false;
-            break;
-        }
+    // Verificar que la señal filtrada tiene componentes significativas en torno a 5000 Hz
+    float maxAmplitude = 0.0f;
+    for (const auto& sample : noisySignal) {
+        maxAmplitude = std::max(maxAmplitude, std::abs(sample));
     }
 
-    // Si todos los valores son iguales, el filtro no ha hecho nada (lo cual sería un error aquí)
-    ASSERT_FALSE(allSame);
-}
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    ASSERT_GT(maxAmplitude, 0.5f);  // Asegurarse de que la señal útil no fue filtrada
 }

@@ -1,8 +1,8 @@
 #include <iostream>
 #include "../DSPModules/SignalReader.h"
 #include "../DSPModules/Preprocessor.h"
-#include "SignalVisualizer.h"
 #include "../DSPModules/Filter.h"
+#include "../DSPModules/Visualizer.h"
 
 int main() {
     // Ruta del archivo WAV que contiene los datos IQ
@@ -10,9 +10,6 @@ int main() {
 
     // Inicializar el lector de señales
     SignalReader reader(filePath);
-
-    // Inicializar el visualizador de gráficos
-    SignalVisualizer visualizer;
 
     // Leer un chunk de datos IQ
     auto iqData = reader.getNextChunk(1024);
@@ -23,9 +20,6 @@ int main() {
     // Aplicar corrección de offset DC
     preprocessor.applyDCOffsetCorrection(iqData);
 
-    // Aplicar normalización
-    preprocessor.normalize(iqData);
-
     // Inicializar el filtro con la tasa de muestreo
     float sampleRate = 48000.0f; // Tasa de muestreo en Hz
     Filter filter(sampleRate);
@@ -34,10 +28,11 @@ int main() {
     float lowFreq = 5000.0f;   // Frecuencia baja en Hz
     float highFreq = 15000.0f; // Frecuencia alta en Hz
     filter.applyBandpassFilter(iqData, lowFreq, highFreq);
-
-    // Visualizar la señal filtrada
-    visualizer.setSignal(iqData);
-    visualizer.show();
+    
+    Visualizer visualizer;
+    visualizer.showFrequencyDomain(iqData); // Visualizar en el dominio de la frecuencia
+    preprocessor.normalize(iqData);
+    visualizer.showTimeDomain(iqData);    // Visualizar en el dominio del tiempo
 
     return 0;
 }

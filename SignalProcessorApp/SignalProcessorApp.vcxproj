@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SignalVisualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DSPModules\DSPModules.vcxproj">
@@ -136,6 +137,9 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="393.763_2024-09-02_19-42-53.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SignalVisualizer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

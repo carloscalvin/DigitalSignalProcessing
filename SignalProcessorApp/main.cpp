@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../DSPModules/SignalReader.h"
 #include "../DSPModules/Preprocessor.h"
+#include "SignalVisualizer.h"
 
 int main() {
     // Ruta del archivo WAV que contiene los datos IQ
@@ -9,22 +10,29 @@ int main() {
     // Inicializar el lector de señales
     SignalReader reader(filePath);
 
+    // Inicializar el visualizador de gráficos
+    SignalVisualizer visualizer;
+
     // Leer un chunk de datos IQ
     auto iqData = reader.getNextChunk(1024);
+    visualizer.setTitle("Raw IQ");
+    visualizer.setSignal(iqData);
+    visualizer.show();
 
     // Inicializar el preprocesador
     Preprocessor preprocessor;
 
     // Aplicar corrección de offset DC
     preprocessor.applyDCOffsetCorrection(iqData);
+    visualizer.setTitle("Corregido offset DC");
+    visualizer.setSignal(iqData);
+    visualizer.show();
 
     // Aplicar normalización
     preprocessor.normalize(iqData);
-
-    // Visualización del resultado en el dominio del tiempo (por ejemplo)
-    for (const auto& sample : iqData) {
-        std::cout << sample.real() << " + " << sample.imag() << "i" << std::endl;
-    }
+    visualizer.setTitle("Normalizada");
+    visualizer.setSignal(iqData);
+    visualizer.show();
 
     return 0;
 }

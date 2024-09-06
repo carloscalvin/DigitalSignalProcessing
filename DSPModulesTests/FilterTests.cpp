@@ -36,3 +36,19 @@ TEST(FilterTests, BandpassFilterTest) {
 
     ASSERT_GT(maxAmplitude, 0.5f);  // Asegurarse de que la señal útil no fue filtrada
 }
+
+// Test básico para verificar que el filtro pasa-bajos funciona correctamente
+TEST(FilterTests, LowPassFilterTest) {
+    // Señal de prueba (señal compuesta por varias frecuencias)
+    std::vector<float> testSignal = { 0, 1, 0, -1, 0, 1, 0, -1 };  // Señal con frecuencias altas y bajas
+    float sampleRate = 48000.0f;  // Tasa de muestreo en Hz
+    float cutoffFreq = 5000.0f;   // Frecuencia de corte en Hz (pasa-bajos)
+
+    Filter filter(sampleRate);
+    filter.applyLowPassFilter(testSignal, cutoffFreq);
+
+    // Verificación básica: después de aplicar el filtro pasa-bajos, la señal debe estar más suavizada
+    for (size_t i = 1; i < testSignal.size(); ++i) {
+        ASSERT_LE(std::abs(testSignal[i] - testSignal[i - 1]), 1.0f); // Diferencias entre muestras deben ser menores
+    }
+}

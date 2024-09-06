@@ -1,6 +1,8 @@
 #ifndef FILTER_H
 #define FILTER_H
-
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 #include <vector>
 #include <complex>
 
@@ -16,6 +18,9 @@ public:
 
     // Aplica un filtro pasa-banda a la señal IQ, dentro del rango de frecuencias especificado.
     void applyBandpassFilter(std::vector<std::complex<float>>& iqData, float lowFreq, float highFreq);
+
+    // Aplica un filtro pasa-bajos a una señal real
+    void applyLowPassFilter(std::vector<float>& signal, float cutoffFreq);
 
 private:
     float sampleRate;  // Tasa de muestreo en Hz

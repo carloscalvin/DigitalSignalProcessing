@@ -49,3 +49,15 @@ void Filter::applyBandpassFilter(std::vector<std::complex<float>>& iqData, float
     fftwf_free(in);
     fftwf_free(out);
 }
+
+void Filter::applyLowPassFilter(std::vector<float>& signal, float cutoffFreq) {
+    // Coeficientes del filtro
+    float RC = 1.0f / (2.0f * M_PI * cutoffFreq);
+    float dt = 1.0f / sampleRate;
+    float alpha = dt / (RC + dt);
+
+    // Aplicar el filtro
+    for (size_t i = 1; i < signal.size(); ++i) {
+        signal[i] = signal[i - 1] + alpha * (signal[i] - signal[i - 1]);
+    }
+}

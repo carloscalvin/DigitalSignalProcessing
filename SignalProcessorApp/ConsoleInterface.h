@@ -7,6 +7,7 @@
 #include "../DSPModules/Filter.h"
 #include "../DSPModules/Visualizer.h"
 #include "../DSPModules/Modulator.h"
+#include "AudioPlayer.h"
 
 class ConsoleInterface {
 public:
@@ -26,6 +27,7 @@ private:
     Preprocessor preprocessor;
     Visualizer visualizer;
     Modulator modulator;
+    AudioPlayer audioPlayer;
 };
 
 #endif // CONSOLEINTERFACE_H

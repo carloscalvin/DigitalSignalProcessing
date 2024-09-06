@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AudioPlayer.cpp" />
     <ClCompile Include="ConsoleInterface.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -139,6 +140,7 @@
     <Media Include="393.763_2024-09-02_19-42-53.wav" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioPlayer.h" />
     <ClInclude Include="ConsoleInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

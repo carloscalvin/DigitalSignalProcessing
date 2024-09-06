@@ -26,6 +26,7 @@ void ConsoleInterface::showMainMenu() {
     std::wcout << "12. Demodulación FM" << std::endl;
     std::wcout << "13. Visualizar señal en el dominio del tiempo" << std::endl;
     std::wcout << "14. Visualizar señal en el dominio de la frecuencia" << std::endl;
+    std::wcout << "15. Reproducir señal demodulada" << std::endl;
     std::wcout << "0. Salir" << std::endl;
     std::wcout << "Selecciona una opción: ";
 }
@@ -140,6 +141,8 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         break;
     }
     case 10: {
+        std::wcout << "Introduce la tasa de muestreo en Hz: ";
+        std::cin >> sampleRate;
         Modulator modulator;
         currentSignalIQ = modulator.demodulateAM(currentSignalIQ);
         std::wcout << "Demodulación AM aplicada" << std::endl;
@@ -156,7 +159,9 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::wcout << "Modulación FM aplicada" << std::endl;
         break;
     }
-    case 12: { // Demodulación FM
+    case 12: {
+        std::wcout << "Introduce la tasa de muestreo en Hz: ";
+        std::cin >> sampleRate;
         Modulator modulator;
         currentSignalReal = modulator.demodulateFM(currentSignalIQ, sampleRate);
         std::wcout << "Demodulación FM aplicada" << std::endl;
@@ -168,6 +173,15 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
     }
     case 14: {
         visualizer.showFrequencyDomain(currentSignalIQ);
+        break;
+    }
+    case 15: {
+        if (currentSignalReal.empty()) {
+            std::wcout << "No hay señal disponible para reproducir." << std::endl;
+            break;
+        }
+        std::wcout << "Reproduciendo señal..." << std::endl;
+        audioPlayer.play(currentSignalReal, sampleRate);
         break;
     }
     case 0:

@@ -17,7 +17,8 @@ private:
     void handleMainMenuSelection(int selection);  // Gestiona la selección del usuario
 
     // Variables para almacenar la señal actual y la tasa de muestreo
-    std::vector<std::complex<float>> currentSignal;
+    std::vector<std::complex<float>> currentSignalIQ;
+    std::vector<float> currentSignalReal;
     float sampleRate;
 
     // Instancias de las clases de la librería DSP

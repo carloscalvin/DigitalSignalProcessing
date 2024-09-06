@@ -30,7 +30,6 @@ TEST(ModulatorTests, ModulateAMTest) {
     ASSERT_EQ(modulatedSignal.size(), length);  // Asegurarse de que la señal modulada tenga la longitud correcta
 
     // Verificar que la amplitud de la señal modulada varía de acuerdo a la señal moduladora
-    // Aquí simplemente verificamos que la amplitud de las muestras varía, lo que indicaría que se ha aplicado la modulación
     float maxAmplitude = 0.0f;
     float minAmplitude = std::numeric_limits<float>::max();
     for (const auto& sample : modulatedSignal) {
@@ -41,4 +40,51 @@ TEST(ModulatorTests, ModulateAMTest) {
 
     ASSERT_GT(maxAmplitude, carrierAmplitude);  // La amplitud máxima debe ser mayor que la amplitud de la portadora
     ASSERT_LT(minAmplitude, carrierAmplitude);  // La amplitud mínima debe ser menor que la amplitud de la portadora
+}
+
+TEST(ModulatorTests, ModulateFMTest) {
+    SignalGenerator generator;
+    Modulator modulator;
+
+    // Parámetros para la señal moduladora (una onda senoidal)
+    float modulatingFrequency = 1000.0f;  // Frecuencia de la moduladora en Hz
+    float modulatingAmplitude = 0.5f;     // Amplitud de la moduladora
+    float modulatingPhase = 0.0f;         // Fase de la moduladora
+    float sampleRate = 48000.0f;          // Tasa de muestreo en Hz
+    size_t length = 1024;                 // Número de muestras
+
+    // Generar la señal moduladora
+    auto modulatingSignal = generator.generateSineWave(modulatingAmplitude, modulatingFrequency, modulatingPhase, sampleRate, length);
+
+    // Aplicar la modulación FM
+    float carrierFreq = 10000.0f;  // Frecuencia de la portadora
+    auto modulatedSignal = modulator.modulateFM(modulatingSignal, carrierFreq, sampleRate);
+
+    // Verificar que la señal modulada tenga la longitud correcta
+    ASSERT_EQ(modulatedSignal.size(), length);
+}
+
+TEST(ModulatorTests, DemodulateFMTest) {
+    SignalGenerator generator;
+    Modulator modulator;
+
+    // Parámetros para la señal moduladora (una onda senoidal)
+    float modulatingFrequency = 1000.0f;  // Frecuencia de la moduladora en Hz
+    float modulatingAmplitude = 0.5f;     // Amplitud de la moduladora
+    float modulatingPhase = 0.0f;         // Fase de la moduladora
+    float sampleRate = 48000.0f;          // Tasa de muestreo en Hz
+    size_t length = 1024;                 // Número de muestras
+
+    // Generar la señal moduladora
+    auto modulatingSignal = generator.generateSineWave(modulatingAmplitude, modulatingFrequency, modulatingPhase, sampleRate, length);
+
+    // Aplicar la modulación FM
+    float carrierFreq = 10000.0f;
+    auto modulatedSignal = modulator.modulateFM(modulatingSignal, carrierFreq, sampleRate);
+
+    // Aplicar la demodulación FM
+    auto demodulatedSignal = modulator.demodulateFM(modulatedSignal, sampleRate);
+
+    // Verificar que la señal demodulada tenga la longitud correcta (es una muestra menos debido al proceso de diferenciación)
+    ASSERT_EQ(demodulatedSignal.size(), length - 1);
 }

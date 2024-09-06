@@ -21,8 +21,11 @@ void ConsoleInterface::showMainMenu() {
     std::wcout << "7. Añadir ruido a la señal" << std::endl;
     std::wcout << "8. Aplicar filtro pasa-banda" << std::endl;
     std::wcout << "9. Modulación AM" << std::endl;
-    std::wcout << "10. Visualizar señal en el dominio del tiempo" << std::endl;
-    std::wcout << "11. Visualizar señal en el dominio de la frecuencia" << std::endl;
+    std::wcout << "10. Demodulación AM" << std::endl;
+    std::wcout << "11. Modulación FM" << std::endl;
+    std::wcout << "12. Demodulación FM" << std::endl;
+    std::wcout << "13. Visualizar señal en el dominio del tiempo" << std::endl;
+    std::wcout << "14. Visualizar señal en el dominio de la frecuencia" << std::endl;
     std::wcout << "0. Salir" << std::endl;
     std::wcout << "Selecciona una opción: ";
 }
@@ -37,7 +40,7 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::wcout << "Introduce el número de muestras: ";
         std::cin >> length;
         SignalReader reader(filePath);
-        currentSignal = reader.getNextChunk(length);
+        currentSignalIQ = reader.getNextChunk(length);
         std::wcout << "Señal cargada" << std::endl;
         break;
     }
@@ -54,7 +57,7 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::cin >> sampleRate;
         std::wcout << "Introduce el número de muestras: ";
         std::cin >> length;
-        currentSignal = signalGenerator.generateSineWave(amplitude, frequency, phase, sampleRate, length);
+        currentSignalIQ = signalGenerator.generateSineWave(amplitude, frequency, phase, sampleRate, length);
         std::wcout << "Señal senoidal generada" << std::endl;
         break;
     }
@@ -67,7 +70,7 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::cin >> frequency;
         std::wcout << "Introduce el número de muestras: ";
         std::cin >> length;
-        currentSignal = signalGenerator.generateSquareWave(amplitude, frequency, sampleRate, length);
+        currentSignalIQ = signalGenerator.generateSquareWave(amplitude, frequency, sampleRate, length);
         std::wcout << "Señal cuadrada generada" << std::endl;
         break;
     }
@@ -80,29 +83,29 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::cin >> stddev;
         std::wcout << "Introduce el número de muestras: ";
         std::cin >> length;
-        currentSignal = signalGenerator.generateGaussianNoise(mean, stddev, length);
+        currentSignalIQ = signalGenerator.generateGaussianNoise(mean, stddev, length);
         std::wcout << "Ruido gaussiano generado" << std::endl;
         break;
     }
     case 5: {
-        preprocessor.normalize(currentSignal);
+        preprocessor.normalize(currentSignalIQ);
         std::wcout << "Señal normalizada" << std::endl;
         break;
     }
     case 6: {
-        preprocessor.applyDCOffsetCorrection(currentSignal);
+        preprocessor.applyDCOffsetCorrection(currentSignalIQ);
         std::wcout << "Corrección de offset DC aplicada" << std::endl;
         break;
     }
     case 7: {
         float mean, stddev;
-        size_t length = currentSignal.size();
+        size_t length = currentSignalIQ.size();
         std::wcout << "Introduce la media del ruido: ";
         std::cin >> mean;
         std::wcout << "Introduce la desviación estándar del ruido: ";
         std::cin >> stddev;
         auto noise = signalGenerator.generateGaussianNoise(mean, stddev, length);
-        currentSignal = signalGenerator.addNoise(currentSignal, noise);
+        currentSignalIQ = signalGenerator.addNoise(currentSignalIQ, noise);
         std::wcout << "Ruido añadido a la señal" << std::endl;
         break;
     }
@@ -115,7 +118,7 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::wcout << "Introduce la frecuencia alta (Hz): ";
         std::cin >> highFreq;
         Filter filter(sampleRate);
-        filter.applyBandpassFilter(currentSignal, lowFreq, highFreq);
+        filter.applyBandpassFilter(currentSignalIQ, lowFreq, highFreq);
         std::wcout << "Filtro pasa-banda aplicado" << std::endl;
         break;
     }
@@ -132,16 +135,39 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::cin >> length;
         auto carrier = signalGenerator.generateSineWave(amplitude, carrierFrequency, 0.0f, sampleRate, length);
         Modulator modulator;
-        currentSignal = modulator.modulateAM(carrier, currentSignal);
+        currentSignalIQ = modulator.modulateAM(carrier, currentSignalIQ);
         std::wcout << "Modulación AM aplicada" << std::endl;
         break;
     }
     case 10: {
-        visualizer.showTimeDomain(currentSignal);
+        Modulator modulator;
+        currentSignalIQ = modulator.demodulateAM(currentSignalIQ);
+        std::wcout << "Demodulación AM aplicada" << std::endl;
         break;
     }
     case 11: {
-        visualizer.showFrequencyDomain(currentSignal);
+        float carrierFrequency;
+        std::wcout << "Introduce la tasa de muestreo en Hz: ";
+        std::cin >> sampleRate;
+        std::wcout << "Introduce la frecuencia de la portadora (Hz): ";
+        std::cin >> carrierFrequency;
+        Modulator modulator;
+        currentSignalIQ = modulator.modulateFM(currentSignalIQ, carrierFrequency, sampleRate);
+        std::wcout << "Modulación FM aplicada" << std::endl;
+        break;
+    }
+    case 12: { // Demodulación FM
+        Modulator modulator;
+        currentSignalReal = modulator.demodulateFM(currentSignalIQ, sampleRate);
+        std::wcout << "Demodulación FM aplicada" << std::endl;
+        break;
+    }
+    case 13: {
+        visualizer.showTimeDomain(currentSignalIQ);
+        break;
+    }
+    case 14: {
+        visualizer.showFrequencyDomain(currentSignalIQ);
         break;
     }
     case 0:

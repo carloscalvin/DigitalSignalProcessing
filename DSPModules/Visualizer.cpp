@@ -30,6 +30,29 @@ void Visualizer::showTimeDomain(const std::vector<std::complex<float>>& iqData) 
     }
 }
 
+// Muestra la señal real en el dominio del tiempo
+void Visualizer::showRealTimeDomain(const std::vector<float>& realData) {
+    std::vector<sf::Vertex> line;
+
+    for (size_t i = 0; i < realData.size(); ++i) {
+        line.push_back(sf::Vertex(sf::Vector2f(static_cast<float>(i), 300 + realData[i] * 100), sf::Color::Green));
+    }
+
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Dominio del Tiempo - Señal Real");
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear(sf::Color::Black);
+        window.draw(&line[0], line.size(), sf::LinesStrip);
+        window.display();
+    }
+}
+
 // Realiza la transformada de Fourier y muestra el espectro en el dominio de la frecuencia
 void Visualizer::showFrequencyDomain(const std::vector<std::complex<float>>& iqData) {
     size_t N = iqData.size();
@@ -74,6 +97,56 @@ void Visualizer::showFrequencyDomain(const std::vector<std::complex<float>>& iqD
     }
 
     // Limpiar recursos de FFTW
+    fftwf_destroy_plan(plan);
+    fftwf_free(in);
+    fftwf_free(out);
+}
+
+// Realiza la FFT y muestra el espectro en el dominio de la frecuencia para señales reales
+void Visualizer::showRealFrequencyDomain(const std::vector<float>& realData) {
+    size_t N = realData.size();
+
+    // Preparar entrada y salida para FFTW
+    fftwf_complex* in = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * N);
+    fftwf_complex* out = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * N);
+
+    // Copiar la señal real a la entrada para FFTW
+    for (size_t i = 0; i < N; ++i) {
+        in[i][0] = realData[i];  // Parte real
+        in[i][1] = 0.0f;         // Parte imaginaria (cero para señales reales)
+    }
+
+    // Crear y ejecutar el plan FFT
+    fftwf_plan plan = fftwf_plan_dft_1d(N, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+    fftwf_execute(plan);
+
+    // Calcular la magnitud del espectro de frecuencia
+    std::vector<float> magnitude(N / 2);
+    for (size_t i = 0; i < N / 2; ++i) {
+        magnitude[i] = std::sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
+    }
+
+    // Crear la ventana para mostrar el espectro
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Dominio de la Frecuencia - Señal Real");
+    std::vector<sf::Vertex> spectrum;
+
+    for (size_t i = 0; i < N / 2; ++i) {
+        spectrum.push_back(sf::Vertex(sf::Vector2f(static_cast<float>(i), 600 - magnitude[i] * 1000), sf::Color::Green));
+    }
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear(sf::Color::Black);
+        window.draw(&spectrum[0], spectrum.size(), sf::LinesStrip);
+        window.display();
+    }
+
+    // Limpiar los recursos de FFTW
     fftwf_destroy_plan(plan);
     fftwf_free(in);
     fftwf_free(out);

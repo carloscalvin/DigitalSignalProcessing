@@ -52,3 +52,37 @@ TEST(FilterTests, LowPassFilterTest) {
         ASSERT_LE(std::abs(testSignal[i] - testSignal[i - 1]), 1.0f); // Diferencias entre muestras deben ser menores
     }
 }
+
+// Test para el filtro de Kalman utilizando el módulo SignalGenerator
+TEST(FilterTests, ApplyKalmanFilterTest) {
+    Filter filter(48000.0f);  // Tasa de muestreo de 48 kHz
+    SignalGenerator signalGenerator;  // Módulo para generar señales
+
+    // Parámetros de la señal de prueba
+    size_t length = 1000;
+    float amplitude = 1.0f;
+    float frequency = 1000.0f;  // Frecuencia de 1 kHz
+    float sampleRate = 48000.0f;
+
+    // Generar la señal real senoidal
+    auto realSignal = signalGenerator.generateRealSineWave(amplitude, frequency, 0.0f, sampleRate, length);
+
+    // Generar ruido gaussiano real con media 0 y desviación estándar de 0.5
+    auto noise = signalGenerator.generateRealGaussianNoise(0.0f, 0.5f, length);
+
+    // Añadir ruido a la señal original
+    auto noisyRealSignal = signalGenerator.addRealNoise(realSignal, noise);
+
+    // Aplicar el filtro de Kalman a la señal ruidosa
+    filter.applyKalmanFilter(noisyRealSignal);
+
+    // Verificar que la señal filtrada esté más cerca de la señal original
+    for (size_t i = 0; i < length; ++i) {
+        ASSERT_LT(std::abs(realSignal[i] - noisyRealSignal[i]), std::abs(realSignal[i] - (realSignal[i] + noise[i])));
+    }
+
+    // Verificación básica: las muestras consecutivas en la señal filtrada deberían ser más suaves
+    for (size_t i = 1; i < noisyRealSignal.size(); ++i) {
+        ASSERT_LE(std::abs(noisyRealSignal[i] - noisyRealSignal[i - 1]), 0.5f);  // Suavizado
+    }
+}

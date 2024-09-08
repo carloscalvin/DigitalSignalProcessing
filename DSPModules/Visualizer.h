@@ -11,11 +11,17 @@
 
 class Visualizer {
 public:
-    // Muestra la señal IQ en el dominio del tiempo, representando su evolución temporal.
+    // Muestra la señal IQ en el dominio del tiempo
     void showTimeDomain(const std::vector<std::complex<float>>& iqData);
 
-    // Realiza la transformada de Fourier en la señal IQ y muestra su espectro en el dominio de la frecuencia.
+    // Muestra la señal real en el dominio del tiempo
+    void showRealTimeDomain(const std::vector<float>& realData);
+
+    // Realiza la FFT y muestra el espectro en el dominio de la frecuencia para señales IQ
     void showFrequencyDomain(const std::vector<std::complex<float>>& iqData);
+
+    // Realiza la FFT y muestra el espectro en el dominio de la frecuencia para señales reales
+    void showRealFrequencyDomain(const std::vector<float>& realData);
 };
 
 #endif // VISUALIZER_H

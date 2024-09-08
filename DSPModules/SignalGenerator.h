@@ -21,6 +21,7 @@ public:
     // - sampleRate: Tasa de muestreo en Hz.
     // - length: Número de muestras de la señal a generar.
     std::vector<std::complex<float>> generateSineWave(float amplitude, float frequency, float phase, float sampleRate, size_t length);
+    std::vector<float> generateRealSineWave(float amplitude, float frequency, float phase, float sampleRate, size_t length);
 
     // Genera una señal cuadrada
     // - amplitude: Amplitud de la señal.
@@ -28,17 +29,20 @@ public:
     // - sampleRate: Tasa de muestreo en Hz.
     // - length: Número de muestras de la señal a generar.
     std::vector<std::complex<float>> generateSquareWave(float amplitude, float frequency, float sampleRate, size_t length);
+    std::vector<float> generateRealSquareWave(float amplitude, float frequency, float sampleRate, size_t length);
 
     // Genera ruido blanco gaussiano
     // - mean: Media del ruido.
     // - stddev: Desviación estándar del ruido.
     // - length: Número de muestras de ruido a generar.
     std::vector<std::complex<float>> generateGaussianNoise(float mean, float stddev, size_t length);
+    std::vector<float> generateRealGaussianNoise(float mean, float stddev, size_t length);
 
     // Añade ruido a una señal
     // - signal: Señal original a la que se le añadirá ruido.
     // - noise: Señal de ruido que se añadirá a la señal original.
     std::vector<std::complex<float>> addNoise(const std::vector<std::complex<float>>& signal, const std::vector<std::complex<float>>& noise);
+    std::vector<float> addRealNoise(const std::vector<float>& signal, const std::vector<float>& noise);
 };
 
 #endif // SIGNALGENERATOR_H

@@ -9,7 +9,6 @@ void ConsoleInterface::start() {
         handleMainMenuSelection(selection);
     } while (selection != 0);
 }
-
 void ConsoleInterface::showMainMenu() {
     std::wcout << "\nMenú Principal" << std::endl;
     std::wcout << "1. Leer señal de disco" << std::endl;
@@ -21,13 +20,16 @@ void ConsoleInterface::showMainMenu() {
     std::wcout << "7. Añadir ruido a la señal" << std::endl;
     std::wcout << "8. Aplicar filtro pasa-banda" << std::endl;
     std::wcout << "9. Aplicar filtro pasa-bajos" << std::endl;
-    std::wcout << "10. Modulación AM" << std::endl;
-    std::wcout << "11. Demodulación AM" << std::endl;
-    std::wcout << "12. Modulación FM" << std::endl;
-    std::wcout << "13. Demodulación FM" << std::endl;
-    std::wcout << "14. Visualizar señal en el dominio del tiempo" << std::endl;
-    std::wcout << "15. Visualizar señal en el dominio de la frecuencia" << std::endl;
-    std::wcout << "16. Reproducir señal demodulada" << std::endl;
+    std::wcout << "10. Aplicar filtro kalman" << std::endl;
+    std::wcout << "11. Modulación AM" << std::endl;
+    std::wcout << "12. Demodulación AM" << std::endl;
+    std::wcout << "13. Modulación FM" << std::endl;
+    std::wcout << "14. Demodulación FM" << std::endl;
+    std::wcout << "15. Visualizar señal IQ en el dominio del tiempo" << std::endl;
+    std::wcout << "16. Visualizar señal IQ en el dominio de la frecuencia" << std::endl;
+    std::wcout << "17. Visualizar señal real en el dominio del tiempo" << std::endl;
+    std::wcout << "18. Visualizar señal real en el dominio de la frecuencia" << std::endl;
+    std::wcout << "19. Reproducir señal demodulada" << std::endl;
     std::wcout << "0. Salir" << std::endl;
     std::wcout << "Selecciona una opción: ";
 }
@@ -136,6 +138,15 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         break;
     }
     case 10: {
+        float cutoffFreq;
+        std::wcout << "Introduce la tasa de muestreo en Hz: ";
+        std::cin >> sampleRate;
+        Filter filter(sampleRate);
+        filter.applyKalmanFilter(currentSignalReal);  // Aplicar el filtro a la señal real
+        std::wcout << "Filtro kalman aplicado a la señal demodulada" << std::endl;
+        break;
+    }
+    case 11: {
         float carrierFrequency, amplitude;
         size_t length;
         std::wcout << "Introduce la tasa de muestreo en Hz: ";
@@ -152,7 +163,7 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::wcout << "Modulación AM aplicada" << std::endl;
         break;
     }
-    case 11: {
+    case 12: {
         std::wcout << "Introduce la tasa de muestreo en Hz: ";
         std::cin >> sampleRate;
         Modulator modulator;
@@ -160,7 +171,7 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::wcout << "Demodulación AM aplicada" << std::endl;
         break;
     }
-    case 12: {
+    case 13: {
         float carrierFrequency;
         std::wcout << "Introduce la tasa de muestreo en Hz: ";
         std::cin >> sampleRate;
@@ -171,7 +182,7 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::wcout << "Modulación FM aplicada" << std::endl;
         break;
     }
-    case 13: {
+    case 14: {
         std::wcout << "Introduce la tasa de muestreo en Hz: ";
         std::cin >> sampleRate;
         Modulator modulator;
@@ -179,15 +190,31 @@ void ConsoleInterface::handleMainMenuSelection(int selection) {
         std::wcout << "Demodulación FM aplicada" << std::endl;
         break;
     }
-    case 14: {
+    case 15: {
         visualizer.showTimeDomain(currentSignalIQ);
         break;
     }
-    case 15: {
+    case 16: {
         visualizer.showFrequencyDomain(currentSignalIQ);
         break;
     }
-    case 16: {
+    case 17: {
+        if (currentSignalReal.empty()) {
+            std::wcout << "No hay señal real disponible para visualizar." << std::endl;
+            break;
+        }
+        visualizer.showRealTimeDomain(currentSignalReal);
+        break;
+    }
+    case 18: {
+        if (currentSignalReal.empty()) {
+            std::wcout << "No hay señal real disponible para visualizar." << std::endl;
+            break;
+        }
+        visualizer.showRealFrequencyDomain(currentSignalReal);
+        break;
+    }
+    case 19: {
         if (currentSignalReal.empty()) {
             std::wcout << "No hay señal disponible para reproducir." << std::endl;
             break;

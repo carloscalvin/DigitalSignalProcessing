@@ -1,6 +1,7 @@
 #include "Filter.h"
 #include <fftw3.h>
 #include <cmath>
+#include "KalmanFilter.h"
 
 Filter::Filter(float sampleRate) : sampleRate(sampleRate) {}
 
@@ -59,5 +60,18 @@ void Filter::applyLowPassFilter(std::vector<float>& signal, float cutoffFreq) {
     // Aplicar el filtro
     for (size_t i = 1; i < signal.size(); ++i) {
         signal[i] = signal[i - 1] + alpha * (signal[i] - signal[i - 1]);
+    }
+}
+
+void Filter::applyKalmanFilter(std::vector<float>& signal) {
+    KalmanFilter kf(0.1, 1.0, 1.0, signal[0]);  // Inicializar el filtro de Kalman con parámetros iniciales
+
+    std::vector<float> filteredSignal;
+    for (float sample : signal) {
+        filteredSignal.push_back(kf.update(sample));  // Actualizar el filtro con cada muestra y almacenar el resultado
+    }
+
+    for (size_t i = 0; i < signal.size(); ++i) {
+        signal[i] = filteredSignal[i];
     }
 }

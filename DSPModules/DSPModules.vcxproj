@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Filter.h" />
+    <ClInclude Include="KalmanFilter.h" />
     <ClInclude Include="Modulator.h" />
     <ClInclude Include="Preprocessor.h" />
     <ClInclude Include="SignalGenerator.h" />
@@ -28,6 +29,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Filter.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="KalmanFilter.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Modulator.cpp">

@@ -22,6 +22,9 @@ public:
     // Aplica un filtro pasa-bajos a una señal real
     void applyLowPassFilter(std::vector<float>& signal, float cutoffFreq);
 
+    // Aplica un filtro de Kalman a una señal real
+    void applyKalmanFilter(std::vector<float>& signal);
+
 private:
     float sampleRate;  // Tasa de muestreo en Hz
 };
